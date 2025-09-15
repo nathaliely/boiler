@@ -1,6 +1,13 @@
-import { useState } from "react";
+"use client";
 
-export function useChannels() {
-  const [channels, setChannels] = useState<Array<{ id: string; name: string }>>([]);
-  return { channels, setChannels };
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+
+export function useChannels(userId: Id<"users"> | null) {
+  const channels = useQuery(
+    api.channels.listByUser,
+    userId ? { userId } : "skip"
+  );
+  return { channels: channels ?? [] };
 }

@@ -6,7 +6,7 @@ export const listByUser = query({
   handler: async (ctx, { userId }) => {
     return await ctx.db
       .query("channels")
-      .filter((q) => q.eq(q.field("members"), [userId]))
+      .withIndex("by_members", (q) => q.eq("members", userId))
       .collect();
   },
 });

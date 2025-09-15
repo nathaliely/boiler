@@ -26,3 +26,17 @@ export const send = mutation({
     return messageId;
   },
 });
+
+export const patchTranslation = mutation({
+  args: {
+    messageId: v.id("messages"),
+    lang: v.string(),
+    text: v.string(),
+  },
+  handler: async (ctx, { messageId, lang, text }) => {
+    await ctx.db.patch(messageId, {
+      translatedContent: { lang, text },
+    });
+    return messageId;
+  },
+});
