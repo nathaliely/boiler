@@ -1,11 +1,15 @@
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+
 export type CreateChannelInput = {
   name: string;
   type: "direct" | "group";
-  members: string[];
-  relatedRfqId?: string;
+  members: Id<"users">[];
+  relatedRfqId?: Id<"rfqs">;
 };
 
-export async function createChannel(input: CreateChannelInput) {
-  // TODO: wire to Convex mutation
-  return { id: crypto.randomUUID(), createdAt: Date.now(), updatedAt: Date.now(), ...input };
+export function useCreateChannel() {
+  const create = useMutation(api.channels.create);
+  return (input: CreateChannelInput) => create(input as any);
 }

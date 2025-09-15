@@ -5,6 +5,7 @@ import ChannelList from "@/components/chat/ChannelList";
 import MessageList from "@/components/chat/MessageList";
 import ChatComposer from "@/components/chat/ChatComposer";
 import ThreadPanel from "@/components/chat/ThreadPanel";
+import NewChannelModal from "@/components/chat/NewChannelModal";
 import { useChannels } from "@/modules/chat/hooks/useChannels";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -17,10 +18,16 @@ export default function ChatPage() {
   const { channels } = useChannels(currentUserId);
   const [activeId, setActiveId] = useState<Id<"channels"> | null>(null);
   const [threadParent, setThreadParent] = useState<Id<"messages"> | null>(null);
+  const [openNewChannel, setOpenNewChannel] = useState(false);
 
   return (
     <div className="p-6 space-y-4 h-[75vh]">
-      <h1 className="text-2xl font-semibold">Chat</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Chat</h1>
+        <button className="px-3 py-2 bg-primary text-primary-foreground rounded" onClick={() => setOpenNewChannel(true)}>
+          + New Channel
+        </button>
+      </div>
       <div className="flex border rounded-md h-full min-h-96">
         <ChannelList
           channels={(channels as any)?.map((c: any) => ({ id: c._id, name: c.name })) ?? []}
@@ -49,6 +56,12 @@ export default function ChatPage() {
           )}
         </div>
       </div>
+
+      <NewChannelModal
+        open={openNewChannel}
+        onOpenChange={setOpenNewChannel}
+        currentUserId={currentUserId}
+      />
     </div>
   );
 }
