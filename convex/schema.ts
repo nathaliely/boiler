@@ -74,6 +74,13 @@ export default defineSchema({
       text: v.string(),
     })),
     attachments: v.optional(v.array(v.id('_storage'))),
+    parentId: v.optional(v.id('messages')), // for threads
+    reactions: v.optional(v.array(v.object({
+      emoji: v.string(),
+      userId: v.id('users'),
+    }))),
     createdAt: v.number(),
-  }).index('by_channel', ['channelId']),
+  })
+    .index('by_channel', ['channelId'])
+    .index('by_parent', ['parentId']),
 });

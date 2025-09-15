@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import ChannelList from "@/components/chat/ChannelList";
 import MessageList from "@/components/chat/MessageList";
 import ChatComposer from "@/components/chat/ChatComposer";
+import ThreadPanel from "@/components/chat/ThreadPanel";
 import { useChannels } from "@/modules/chat/hooks/useChannels";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -15,6 +16,7 @@ export default function ChatPage() {
 
   const { channels } = useChannels(currentUserId);
   const [activeId, setActiveId] = useState<Id<"channels"> | null>(null);
+  const [threadParent, setThreadParent] = useState<Id<"messages"> | null>(null);
 
   return (
     <div className="p-6 space-y-4 h-[75vh]">
@@ -23,11 +25,28 @@ export default function ChatPage() {
         <ChannelList
           channels={(channels as any)?.map((c: any) => ({ id: c._id, name: c.name })) ?? []}
           activeId={activeId as any}
-          onSelect={(id) => setActiveId(id as any)}
+          onSelect={(id) => {
+            setActiveId(id as any);
+            setThreadParent(null);
+          }}
         />
-        <div className="flex-1 flex flex-col">
-          <MessageList channelId={activeId} />
-          <ChatComposer channelId={activeId} currentUserId={currentUserId} />
+        <div className="flex-1 flex">
+          <div className="flex-1 flex flex-col">
+            <MessageList
+              channelId={activeId}
+              currentUserId={currentUserId}
+              onOpenThread={(pid) => setThreadParent(pid)}
+            />
+            <ChatComposer channelId={activeId} currentUserId={currentUserId} />
+          </div>
+          {threadParent && (
+            <ThreadPanel
+              parentId={threadParent}
+              channelId={activeId}
+              currentUserId={currentUserId}
+              onClose={() => setThreadParent(null)}
+            />
+          )}
         </div>
       </div>
     </div>
